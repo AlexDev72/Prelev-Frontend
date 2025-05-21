@@ -18,14 +18,14 @@ const Navigation = () => {
                 <Link 
                   to="/" 
                   className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                  activeClassName="bg-green-800 text-white"
+                 
                 >
                   Page d'Accueil
                 </Link>
                 <Link 
                   to="/prelevements" 
                   className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                  activeClassName="bg-green-800 text-white"
+           
                 >
                   Liste des Prélèvements
                 </Link>
