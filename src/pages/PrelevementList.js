@@ -5,7 +5,15 @@
  */
 import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
-import { format, parse, startOfWeek, getDay, addHours, endOfWeek, isSameWeek } from "date-fns";
+import {
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  addHours,
+  endOfWeek,
+  isSameWeek,
+} from "date-fns";
 import fr from "date-fns/locale/fr";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { getPrelevements } from "../services/prelevementService";
@@ -45,11 +53,13 @@ const CustomToolbar = ({ label, onNavigate, onView, view, date }) => {
   const getWeekRange = (date) => {
     const start = startOfWeek(date, { weekStartsOn: 1 });
     const end = endOfWeek(date, { weekStartsOn: 1 });
-    
+
     if (isSameWeek(start, end, { weekStartsOn: 1 })) {
       return format(start, "d MMMM yyyy", { locale: fr });
     }
-    return `${format(start, "d", { locale: fr })}-${format(end, "d MMMM yyyy", { locale: fr })}`;
+    return `${format(start, "d", { locale: fr })}-${format(end, "d MMMM yyyy", {
+      locale: fr,
+    })}`;
   };
 
   /**
@@ -57,7 +67,7 @@ const CustomToolbar = ({ label, onNavigate, onView, view, date }) => {
    * @returns {string} Titre formaté
    */
   const getTitle = () => {
-    switch(view) {
+    switch (view) {
       case Views.MONTH:
         return format(date, "MMMM yyyy", { locale: fr }); // Format "Mois Année"
       case Views.WEEK:
@@ -70,27 +80,34 @@ const CustomToolbar = ({ label, onNavigate, onView, view, date }) => {
   };
 
   return (
-    <div className="p-4 bg-blue-500 text-white">
+    <div className="p-4 bg-green-800 text-white">
       {/* Barre de navigation principale */}
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-2 space-y-2 md:space-y-0 w-full">
         {/* Boutons de navigation */}
         <div className="flex space-x-2">
-          <button onClick={() => onNavigate("PREV")} className="px-3 py-1 rounded hover:bg-blue-600 transition">
+          <button
+            onClick={() => onNavigate("PREV")}
+            className="px-3 py-1 rounded hover:bg-blue-600 transition"
+          >
             {"<"}
           </button>
-          <button onClick={() => onNavigate("TODAY")} className="px-3 py-1 rounded hover:bg-blue-600 transition">
+          <button
+            onClick={() => onNavigate("TODAY")}
+            className="px-3 py-1 rounded hover:bg-blue-600 transition"
+          >
             {messages.today}
           </button>
-          <button onClick={() => onNavigate("NEXT")} className="px-3 py-1 rounded hover:bg-blue-600 transition">
+          <button
+            onClick={() => onNavigate("NEXT")}
+            className="px-3 py-1 rounded hover:bg-blue-600 transition"
+          >
             {">"}
           </button>
         </div>
-        
+
         {/* Titre central */}
-        <div className="text-xl font-semibold">
-          {getTitle()}
-        </div>
-        
+        <div className="text-xl font-semibold">{getTitle()}</div>
+
         {/* Boutons de changement de vue */}
         <div className="flex space-x-2">
           {[Views.MONTH, Views.WEEK, Views.DAY].map((v) => (
@@ -132,7 +149,9 @@ const EventComponent = ({ event }) => {
         src={logoSrc}
         alt={event.title}
         className="h-6 w-auto object-contain"
-        title={`${event.title} - ${format(event.start, "HH:mm", { locale: fr })}`}
+        title={`${event.title} - ${format(event.start, "HH:mm", {
+          locale: fr,
+        })}`}
       />
     </div>
   );
@@ -200,7 +219,7 @@ const PrelevementList = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div id="calendrier" className="pt-3 min-h-screen text-center px-4">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">
         Calendrier des Prélèvements
       </h2>

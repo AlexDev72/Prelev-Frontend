@@ -10,8 +10,16 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
 }
 
+.App{
+  background-color: rgb(205, 247, 205);
+}
+
+#calendrier{
+  background-color: rgb(215, 247, 215);
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
