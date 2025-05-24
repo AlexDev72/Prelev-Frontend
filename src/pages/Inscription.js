@@ -1,42 +1,55 @@
-// src/pages/Inscription.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Composant Inscription – Gère l'inscription d'un nouvel utilisateur.
+ * Utilise un formulaire contrôlé avec vérification de la saisie côté client.
+ */
 const Inscription = () => {
   const [email, setEmail] = useState('');
-  const [motDePasse, setMotDePasse] = useState('');
+  const [mdp, setMdp] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Permet la redirection après inscription
 
+  /**
+   * handleSubmit – Gère l'envoi du formulaire.
+   * Effectue des validations locales avant de faire un appel au backend.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
-    if (!email || !motDePasse || !confirmation) {
+    // Vérifie que tous les champs sont remplis
+    if (!email || !mdp || !confirmation) {
       setError("Veuillez remplir tous les champs.");
       return;
     }
-    if (motDePasse !== confirmation) {
+
+    // Vérifie la correspondance des mots de passe
+    if (mdp !== confirmation) {
       setError("Les mots de passe ne correspondent pas.");
       return;
     }
 
     try {
+      // Envoie les données au backend pour création de compte
       const response = await fetch('http://localhost:8080/utilisateur/cree', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, motDePasse })  // nom retiré ici
+        body: JSON.stringify({ email, mdp })
       });
 
+      // Si erreur côté serveur
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Erreur lors de l\'inscription');
+        const message = await response.text();
+        throw new Error(message || "Erreur lors de l'inscription");
       }
 
-      // Inscription réussie, rediriger vers la connexion
+      // Redirige vers la page de connexion si tout s'est bien passé
       navigate('/connexion');
     } catch (err) {
+      // Affiche un message d'erreur utilisateur
       setError(err.message);
     }
   };
@@ -44,7 +57,11 @@ const Inscription = () => {
   return (
     <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-6">Inscription</h2>
+
+      {/* Affiche un message d'erreur si nécessaire */}
       {error && <div className="mb-4 text-red-600">{error}</div>}
+
+      {/* Formulaire d'inscription */}
       <form onSubmit={handleSubmit}>
         <label className="block mb-2 font-medium" htmlFor="email">Email</label>
         <input
@@ -56,13 +73,13 @@ const Inscription = () => {
           required
         />
 
-        <label className="block mb-2 font-medium" htmlFor="motDePasse">Mot de passe</label>
+        <label className="block mb-2 font-medium" htmlFor="mdp">Mot de passe</label>
         <input
-          id="motDePasse"
+          id="mdp"
           type="password"
           className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={motDePasse}
-          onChange={e => setMotDePasse(e.target.value)}
+          value={mdp}
+          onChange={e => setMdp(e.target.value)}
           required
         />
 
