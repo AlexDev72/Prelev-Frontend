@@ -8,8 +8,12 @@ const API_URL = "http://localhost:8080/prelevement";
  * 
  * @returns {Promise} Promesse contenant la réponse de l'API (liste des prélèvements).
  */
-export const getPrelevements = () => {
-  return axios.get(`${API_URL}/lire`);
+export const getPrelevements = (token) => {
+  return axios.get(`${API_URL}/lire`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 };
 
 /**
@@ -18,9 +22,14 @@ export const getPrelevements = () => {
  * @param {Object} data - Données du prélèvement à créer.
  * @returns {Promise} Promesse contenant la réponse de l'API.
  */
-export const createPrelevement = (data) => {
-  return axios.post(`${API_URL}/cree`, data);
+export const createPrelevement = (data, token) => {
+  return axios.post(`${API_URL}/cree`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 };
+
 
 /**
  * Met à jour un prélèvement existant via une requête PUT.
