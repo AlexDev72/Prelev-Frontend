@@ -1,240 +1,205 @@
-/**
- * Composant Navigation - Barre de navigation principale de l'application
- *
- * Gère :
- * - L'affichage responsive (mobile/desktop)
- * - L'état de connexion via ConnexionContext
- * - Les redirections via React Router
- * - Le menu mobile interactif
- */
-
-import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
-import { ConnexionContext } from "../context/ConnexionContext";
 
 const Navigation = () => {
-  // État pour la gestion du menu mobile
-  const [isOpen, setIsOpen] = useState(false);
-
   // Récupération de l'état d'authentification
-  const { user, logout } = useContext(ConnexionContext);
 
   /**
    * Gère la déconnexion de l'utilisateur
    * - Appelle la méthode logout du contexte
    * - Ferme le menu mobile si ouvert
    */
-  const handleLogout = () => {
-    logout();
-    setIsOpen(false);
-  };
 
   /**
    * Génère les initiales de l'utilisateur pour l'avatar
    * @returns {string} Initiales ou "?" si non disponible
    */
-  const getInitials = () => {
-    if (!user || !user.nom) return "?";
-    return user.nom
-      .split(" ")
-      .map((name) => name[0])
-      .join("")
-      .toUpperCase();
-  };
 
   return (
-    <nav className="bg-gradient-to-r from-green-800 to-green-900 shadow-lg">
-      {/* Conteneur principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Partie gauche - Logo et liens desktop */}
-          <div className="flex items-center">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <span className="text-white font-bold text-xl">Prelèv'</span>
-            </div>
-
-            {/* Liens navigation (version desktop) */}
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <Link
-                  to="/"
-                  className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                >
-                  Accueil
-                </Link>
-
-                {user && (
-                  <Link
-                    to="/prelevements"
-                    className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                  >
-                    Liste des Prélèvements
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Partie droite - Éléments utilisateur (version desktop) */}
-          <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6 space-x-4">
-              {/* Bouton Notifications */}
-              <button className="p-1 rounded-full text-green-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-800 focus:ring-white">
-                <span className="sr-only">Notifications</span>
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
-              </button>
-
-              {/* Affichage conditionnel selon l'état de connexion */}
-              {!user ? (
-                // Non connecté - Affiche Connexion/Inscription
-                <>
-                  <Link
-                    to="/connexion"
-                    className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                  >
-                    Connexion
-                  </Link>
-                  <Link
-                    to="/inscription"
-                    className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                  >
-                    Inscription
-                  </Link>
-                </>
-              ) : (
-                // Connecté - Affiche Bouton Déconnexion
-                <button
-                  onClick={handleLogout}
-                  className="text-green-100 hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition duration-300"
-                >
-                  Déconnexion
-                </button>
-              )}
-
-              {/* Avatar utilisateur si connecté */}
-              {user && (
-                <div className="ml-3 relative">
-                  <div className="bg-green-700 h-8 w-8 rounded-full flex items-center justify-center text-green-100 font-semibold">
-                    {getInitials()}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Bouton menu mobile (hamburger) */}
-          <div className="-mr-2 flex md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              type="button"
-              className="bg-green-700 inline-flex items-center justify-center p-2 rounded-md text-green-200 hover:text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-800 focus:ring-white"
-              aria-expanded={isOpen}
-            >
-              <span className="sr-only">Menu principal</span>
-              {/* Icône hamburger qui se transforme en croix */}
-              <svg
-                className="block h-6 w-6"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d={
-                    isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"
-                  }
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Menu mobile (affiché seulement sur petits écrans) */}
-      <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          {/* Liens principaux */}
+    <div class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 left-1/2 bottom-[0rem] dark:bg-gray-700 dark:border-gray-600">
+      <div class="grid h-full max-w-lg grid-cols-5 mx-auto">
+        <div className="relative group">
           <Link
             to="/"
-            className="text-green-100 hover:bg-green-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-            onClick={() => setIsOpen(false)}
+            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+            style={{ display: "flex", height: "100%" }}
           >
-            Page d'Accueil
-          </Link>
-          <Link
-            to="/prelevements"
-            className="text-green-100 hover:bg-green-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-            onClick={() => setIsOpen(false)}
-          >
-            Liste des Prélèvements
+            <button
+              type="button"
+              className="inline-flex items-center justify-center w-full h-full"
+            >
+              <svg
+                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
+              </svg>
+              <span className="sr-only">Home</span>
+            </button>
           </Link>
 
-          {/* Affichage conditionnel mobile */}
-          {!user ? (
-            // Non connecté - Affiche Connexion/Inscription
-            <>
-              <Link
-                to="/connexion"
-                className="text-green-100 hover:bg-green-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Connexion
-              </Link>
-              <Link
-                to="/inscription"
-                className="text-green-100 hover:bg-green-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                Inscription
-              </Link>
-            </>
-          ) : (
-            // Connecté - Affiche Bouton Déconnexion
+          {/* Tooltip */}
+          <div
+            id="tooltip-home"
+            role="tooltip"
+            className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+            style={{
+              bottom: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          >
+            Accueil
+            <div className="tooltip-arrow" data-popper-arrow></div>
+          </div>
+        </div>
+        {/* Bouton "Calendrier" avec son tooltip */}
+
+        {/* Tooltip associé au bouton Calendrier */}
+        <div className="relative group">
+          <Link
+            to="/calendrier"
+            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+            style={{ display: "flex", height: "100%" }}
+          >
             <button
-              onClick={handleLogout}
-              className="text-green-100 hover:bg-green-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium w-full text-left"
+              type="button"
+              className="inline-flex items-center justify-center w-full h-full"
             >
-              Déconnexion
+              <svg
+                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M6 2a1 1 0 1 1 2 0v1h4V2a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v2H3V5a2 2 0 0 1 2-2h1V2Zm11 6H3v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8ZM7 11a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm3 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2Zm3 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" />
+              </svg>
+              <span className="sr-only">Calendrier</span>
             </button>
-          )}
+          </Link>
+
+          {/* Tooltip associé au bouton Calendrier */}
+          <div
+            id="tooltip-calendar"
+            role="tooltip"
+            className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+            style={{
+              bottom: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          >
+            Calendrier
+            <div className="tooltip-arrow" data-popper-arrow></div>
+          </div>
         </div>
 
-        {/* Section profil utilisateur si connecté */}
-        {user && (
-          <div className="pt-4 pb-3 border-t border-green-700">
-            <div className="flex items-center px-5">
-              <div className="bg-green-600 h-10 w-10 rounded-full flex items-center justify-center text-green-100 font-semibold">
-                {getInitials()}
-              </div>
-              <div className="ml-3">
-                <div className="text-base font-medium text-white">
-                  {user.nom || "Utilisateur"}
-                </div>
-                <div className="text-sm font-medium text-green-300">
-                  {user.email || ""}
-                </div>
-              </div>
-            </div>
+        <div class="flex items-center justify-center">
+          <button
+            data-tooltip-target="tooltip-new"
+            type="button"
+            class="inline-flex items-center justify-center w-10 h-10 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-800"
+          >
+            <svg
+              class="w-4 h-4 text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 18 18"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 1v16M1 9h16"
+              />
+            </svg>
+            <span class="sr-only">New item</span>
+          </button>
+        </div>
+        <div
+          id="tooltip-new"
+          role="tooltip"
+          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+        >
+          Create new item
+          <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <button
+          data-tooltip-target="tooltip-settings"
+          type="button"
+          class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
+        >
+          <svg
+            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 12.25V1m0 11.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M4 19v-2.25m6-13.5V1m0 2.25a2.25 2.25 0 0 0 0 4.5m0-4.5a2.25 2.25 0 0 1 0 4.5M10 19V7.75m6 4.5V1m0 11.25a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM16 19v-2"
+            />
+          </svg>
+          <span class="sr-only">Settings</span>
+        </button>
+        <div
+          id="tooltip-settings"
+          role="tooltip"
+          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+        >
+          Settings
+          <div class="tooltip-arrow" data-popper-arrow></div>
+        </div>
+        <div className="relative group">
+          {" "}
+          {/* Ajoutez 'group' ici pour les hover states */}
+          <Link
+            to="/profil"
+            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+            style={{ display: "flex", height: "100%" }} // Conserve la hauteur
+          >
+            <button
+              type="button"
+              className="inline-flex items-center justify-center w-full h-full"
+            >
+              <svg
+                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
+              </svg>
+              <span className="sr-only">Profile</span>
+            </button>
+          </Link>
+          {/* Tooltip - reste inchangé */}
+          <div
+            id="tooltip-profile"
+            role="tooltip"
+            className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700"
+            style={{
+              bottom: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          >
+            Profile
+            <div className="tooltip-arrow" data-popper-arrow></div>
           </div>
-        )}
+        </div>
       </div>
-    </nav>
+    </div>
   );
 };
 

@@ -1,128 +1,139 @@
 /**
- * Composant Connexion - Gère l'authentification des utilisateurs
- *
- * Ce composant affiche un formulaire de connexion, valide les entrées utilisateur,
- * communique avec l'API d'authentification et gère l'état de connexion via le Contexte.
+ * Composant Connexion optimisé pour mobile
  */
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { ConnexionContext } from "../context/ConnexionContext";
 
-// Importations des dépendances
-import { useState, useContext } from "react"; // Hooks React
-import { useNavigate } from "react-router-dom"; // Navigation programmatique
-import { ConnexionContext } from "../context/ConnexionContext"; // Contexte d'authentification
-
-/**
- * Composant fonctionnel Connexion
- * @returns {JSX.Element} Le formulaire de connexion
- */
 export const Connexion = () => {
-  // États locaux pour la gestion du formulaire
-  const [email, setEmail] = useState(""); // Stocke l'email saisi
-  const [mdp, setMdp] = useState(""); // Stocke le mot de passe saisi
-  const [error, setError] = useState(null); // Gère les erreurs de connexion
+  const [email, setEmail] = useState("");
+  const [mdp, setMdp] = useState("");
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // État de chargement
 
-  // Hooks pour la navigation et l'authentification
-  const navigate = useNavigate(); // Hook de navigation React Router
-  const { login } = useContext(ConnexionContext); // Méthode de connexion du contexte
+  const navigate = useNavigate();
+  const { login } = useContext(ConnexionContext);
 
-  /**
-   * Soumission du formulaire de connexion
-   * @param {Event} e - Événement de soumission du formulaire
-   */
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Empêche le rechargement de la page
-    setError(null); // Réinitialise les erreurs précédentes
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-    // Validation des champs requis
     if (!email || !mdp) {
       setError("Veuillez remplir tous les champs");
+      setIsLoading(false);
       return;
     }
 
     try {
-      // Requête API pour l'authentification
-      const response = await fetch("http://localhost:8080/auth/connexion", {
+      const response = await fetch("http://192.168.1.22:8080/auth/connexion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, mdp }), // Envoi des identifiants
+        body: JSON.stringify({ email, mdp }),
       });
 
-      // Gestion des erreurs HTTP
       if (!response.ok) {
         const data = await response.text();
         throw new Error(data || "Erreur lors de la connexion");
       }
 
-      // Traitement de la réponse réussie
       const data = await response.json();
-
-      // Persistance du token JWT
       localStorage.setItem("token", data.token);
 
-      // Mise à jour du contexte d'authentification
       login({
         email,
         nom: email.split("@")[0],
         token: data.token,
-        utilisateurId: data.utilisateurId, 
+        utilisateurId: data.utilisateurId,
       });
 
-      // Redirection vers la page d'accueil après connexion
       navigate("/");
     } catch (err) {
-      // Gestion des erreurs (réseau, API, etc.)
-      setError(err.message);
+      setError(err.message || "Identifiants incorrects");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Rendu du composant
   return (
-    <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow">
-      {/* Titre du formulaire */}
-      <h2 className="text-2xl font-bold mb-6">Connexion</h2>
-
-      {/* Affichage des erreurs */}
-      {error && <div className="mb-4 text-red-600">{error}</div>}
-
-      {/* Formulaire de connexion */}
-      <form onSubmit={handleSubmit}>
-        {/* Champ Email */}
-        <div className="mb-4">
-          <label className="block mb-2 font-medium" htmlFor="email">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            className="w-full p-2 border border-gray-300 rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+    <div className="min-h-screen bg-green-50 flex flex-col justify-center p-4">
+      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
+        {/* Logo ou titre centré */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Connexion</h1>
+          <p className="text-gray-600 mt-2">Accédez à votre compte</p>
         </div>
 
-        {/* Champ Mot de passe */}
-        <div className="mb-6">
-          <label className="block mb-2 font-medium" htmlFor="mdp">
-            Mot de passe
-          </label>
-          <input
-            id="mdp"
-            type="password"
-            className="w-full p-2 border border-gray-300 rounded"
-            value={mdp}
-            onChange={(e) => setMdp(e.target.value)}
-            required
-          />
-        </div>
+        {/* Message d'erreur */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
-        {/* Bouton de soumission */}
-        <button
-          type="submit"
-          className="w-full bg-green-800 text-white py-2 rounded hover:bg-green-900 transition"
-        >
-          Se connecter
-        </button>
-      </form>
+        {/* Formulaire */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Adresse email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="votre@email.com"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="mdp" className="block text-sm font-medium text-gray-700 mb-1">
+              Mot de passe
+            </label>
+            <input
+              id="mdp"
+              type="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+              value={mdp}
+              onChange={(e) => setMdp(e.target.value)}
+              required
+            />
+          </div>
+
+     
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white ${isLoading ? 'bg-green-600' : 'bg-green-700 hover:bg-green-800'} transition flex justify-center items-center`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connexion...
+              </>
+            ) : 'Se connecter'}
+          </button>
+        </form>
+
+        {/* Lien vers inscription */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Pas encore de compte ?{' '}
+            <a href="/inscription" className="text-green-700 font-medium hover:underline">
+              S'inscrire
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

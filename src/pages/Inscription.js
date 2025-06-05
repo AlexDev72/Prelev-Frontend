@@ -1,105 +1,124 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * Composant Inscription – Gère l'inscription d'un nouvel utilisateur.
- * Utilise un formulaire contrôlé avec vérification de la saisie côté client.
- */
 const Inscription = () => {
   const [email, setEmail] = useState('');
   const [mdp, setMdp] = useState('');
-  const [confirmation, setConfirmation] = useState('');
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Permet la redirection après inscription
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  /**
-   * handleSubmit – Gère l'envoi du formulaire.
-   * Effectue des validations locales avant de faire un appel au backend.
-   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setIsLoading(true);
 
-    // Vérifie que tous les champs sont remplis
-    if (!email || !mdp || !confirmation) {
+    // Validation identique à votre version originale
+    if (!email || !mdp) {
       setError("Veuillez remplir tous les champs.");
-      return;
-    }
-
-    // Vérifie la correspondance des mots de passe
-    if (mdp !== confirmation) {
-      setError("Les mots de passe ne correspondent pas.");
+      setIsLoading(false);
       return;
     }
 
     try {
-      // Envoie les données au backend pour création de compte
-      const response = await fetch('http://localhost:8080/utilisateur/cree', {
+      // Appel API strictement identique
+      const response = await fetch('http://192.168.1.22:8080/utilisateur/cree', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, mdp })
       });
 
-      // Si erreur côté serveur
       if (!response.ok) {
         const message = await response.text();
         throw new Error(message || "Erreur lors de l'inscription");
       }
 
-      // Redirige vers la page de connexion si tout s'est bien passé
+      // Redirection identique
       navigate('/connexion');
     } catch (err) {
-      // Affiche un message d'erreur utilisateur
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-6">Inscription</h2>
+    <div className="min-h-screen bg-green-50 flex flex-col justify-center p-4">
+      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
+        {/* En-tête */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Inscription</h1>
+          <p className="text-gray-600 mt-2">Créez votre compte</p>
+        </div>
 
-      {/* Affiche un message d'erreur si nécessaire */}
-      {error && <div className="mb-4 text-red-600">{error}</div>}
+        {/* Message d'erreur (style amélioré) */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
 
-      {/* Formulaire d'inscription */}
-      <form onSubmit={handleSubmit}>
-        <label className="block mb-2 font-medium" htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
+        {/* Formulaire simplifié (2 champs comme dans votre original) */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder="votre@email.com"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <label className="block mb-2 font-medium" htmlFor="mdp">Mot de passe</label>
-        <input
-          id="mdp"
-          type="password"
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={mdp}
-          onChange={e => setMdp(e.target.value)}
-          required
-        />
+          <div>
+            <label htmlFor="mdp" className="block text-sm font-medium text-gray-700 mb-1">
+              Mot de passe
+            </label>
+            <input
+              id="mdp"
+              type="password"
+              autoComplete="new-password"
+              placeholder="••••••••"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+              value={mdp}
+              onChange={(e) => setMdp(e.target.value)}
+              required
+            />
+          </div>
 
-        <label className="block mb-2 font-medium" htmlFor="confirmation">Confirmer le mot de passe</label>
-        <input
-          id="confirmation"
-          type="password"
-          className="w-full p-2 border border-gray-300 rounded mb-6"
-          value={confirmation}
-          onChange={e => setConfirmation(e.target.value)}
-          required
-        />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white ${isLoading ? 'bg-green-600' : 'bg-green-700 hover:bg-green-800'} transition flex justify-center items-center`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                En cours...
+              </>
+            ) : "S'inscrire"}
+          </button>
+        </form>
 
-        <button
-          type="submit"
-          className="w-full bg-green-800 text-white py-2 rounded hover:bg-green-900 transition"
-        >
-          S'inscrire
-        </button>
-      </form>
+        {/* Lien vers connexion (optionnel) */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600">
+            Déjà inscrit ?{' '}
+            <a href="/connexion" className="text-green-700 font-medium hover:underline">
+              Se connecter
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

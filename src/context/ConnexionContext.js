@@ -1,51 +1,60 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from "react";
 
-/**
- * Contexte global de connexion utilisé pour suivre l'état de l'utilisateur connecté
- * à travers l'application.
- */
 export const ConnexionContext = createContext();
 
-/**
- * AuthProvider – Fournisseur de contexte qui encapsule toute l'application
- * pour fournir les fonctions de login, logout et l'état utilisateur.
- */
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // Nouvel état pour le chargement
 
   /**
-   * useEffect – Lors du premier chargement de l'application,
-   * on tente de récupérer les données utilisateur sauvegardées
-   * dans le localStorage (si l'utilisateur était déjà connecté).
+   * Restauration de la session au montage du composant
    */
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user');
+  const restoreSession = useCallback(() => {
+    setIsLoading(true);
+    const savedUser = localStorage.getItem("user");
+
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        // Ici vous pourriez vérifier la validité du token côté serveur
+        setUser(parsedUser);
+      } catch (error) {
+        localStorage.removeItem("user");
+      }
     }
+    setIsLoading(false);
   }, []);
 
-  /**
-   * login – Met à jour l'état utilisateur en mémoire et
-   * persiste les données utilisateur dans le localStorage.
-   * @param {Object} userData - Données renvoyées après une authentification réussie
-   */
+  useEffect(() => {
+    restoreSession();
+  }, [restoreSession]);
+
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  /**
-   * logout – Déconnecte l'utilisateur en supprimant ses données
-   * du state et du localStorage.
-   */
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+
+    // 2. Optionnel: Supprimer d'autres données utilisateur
+    localStorage.removeItem("userData");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    // Optionnel : nettoyer d'autres données de session
   };
 
   return (
-    <ConnexionContext.Provider value={{ user, login, logout }}>
+    <ConnexionContext.Provider
+      value={{
+        user,
+        isLoading, // Exposé pour PrivateRoute
+        login,
+        logout,
+        restoreSession, // Exposé pour permettre une restauration manuelle
+      }}
+    >
       {children}
     </ConnexionContext.Provider>
   );
