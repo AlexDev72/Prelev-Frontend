@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 const CalendrierMultiMois = () => {
   const [selected, setSelected] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const nombreMois = 6;
+  useEffect(() => {
+    const htmlElement = document.documentElement;
+
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(htmlElement.classList.contains("dark"));
+    });
+
+    observer.observe(htmlElement, { attributes: true, attributeFilter: ["class"] });
+
+    // Initial check
+    setIsDarkMode(htmlElement.classList.contains("dark"));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const nombreMois = 12;
   const startDate = new Date(2024, 1); // Février 2024
 
   const moisArray = Array.from({ length: nombreMois }, (_, i) => {
@@ -14,31 +30,27 @@ const CalendrierMultiMois = () => {
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.5rem",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        backgroundColor: "#cdf7cd"
-      }}
+      className={`min-h-screen flex flex-col items-center justify-center gap-6 ${
+        isDarkMode ? "bg-gray-800 text-white" : "bg-[#cdf7cd] text-black"
+      }`}
     >
       {moisArray.map((mois, index) => (
-        <DayPicker
+        <div
           key={index}
-          mode="single"
-          selected={selected}
-          onSelect={setSelected}
-          month={mois}
-          pagedNavigation={false}
-          style={{
-            border: "1px solid black", // bordure noire
-            borderRadius: "8px",
-            padding: "10px",
-            backgroundColor: "white", // fond blanc à l’intérieur
-          }}
-        />
+          className={`p-4 rounded border ${
+            isDarkMode ? "bg-gray-700 border-gray-700" : "bg-white border-black"
+          }`}
+        >
+          <DayPicker
+            mode="single"
+            selected={selected}
+            onSelect={setSelected}
+            month={mois}
+            pagedNavigation={false}
+            showNavigation={false}
+            className="[&_.rdp-nav]:hidden"
+          />
+        </div>
       ))}
     </div>
   );

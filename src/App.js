@@ -10,6 +10,7 @@ import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/ConnexionContext';
 import '@fontsource/inter';
 import { useLocation } from 'react-router-dom';
+import AjoutPrelevement from './pages/AjoutPrelevement';
 
 
 const AppContent = () => {
@@ -41,6 +42,14 @@ const AppContent = () => {
           element={
             <PrivateRoute>
               <Calendrier />
+            </PrivateRoute>
+          }
+        />
+         <Route
+          path="/ajout"
+          element={
+            <PrivateRoute>
+              <AjoutPrelevement />
             </PrivateRoute>
           }
         />
