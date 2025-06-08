@@ -185,7 +185,7 @@ const Profil = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+   <div className="min-h-screen bg-gray-50 dark:bg-black pb-20">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
@@ -195,16 +195,16 @@ const Profil = () => {
           <div className="relative">
             <button
               onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-black/70"
             >
               <FiSettings className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
             {showSettingsDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-20 border border-gray-200 dark:border-gray-700">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black/80 rounded-md shadow-lg py-1 z-20 border border-gray-200 dark:border-black/70">
                 <button
                   onClick={toggleDarkMode}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-black/70 w-full text-left"
                 >
                   {darkMode ? (
                     <>
@@ -227,10 +227,10 @@ const Profil = () => {
       {/* Profile Card */}
       <div className="max-w-md mx-auto px-4 pt-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-          <div className="h-32 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+          <div className="h-32 bg-gradient-to-r from-green-800 to-green-500"></div>
           <div className="px-5 pb-6 relative">
             <div className="flex justify-center -mt-16 mb-3">
-              <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full border-4 border-white dark:border-black/80 bg-gray-200 dark:bg-black/70 flex items-center justify-center">
                 <span className="text-3xl text-gray-700 dark:text-gray-300">
                   {userData.prenom.charAt(0).toUpperCase()}
                   {userData.nom.charAt(0).toUpperCase()}
@@ -244,7 +244,7 @@ const Profil = () => {
             </div>
             <button
               onClick={openEditModal}
-              className="w-full py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg text-sm transition duration-200"
+              className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-sm transition duration-200 dark:bg-green-700 dark:hover:bg-green-700"
             >
               Modifier le profil
             </button>
@@ -255,12 +255,12 @@ const Profil = () => {
       {/* Informations */}
       <div className="max-w-md mx-auto px-4 mt-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+          <div className="px-5 py-4 border-b border-gray-100 dark:border-black/70">
             <h3 className="font-semibold text-gray-900 dark:text-white">
               Informations
             </h3>
           </div>
-          <div className="divide-y divide-gray-100 dark:divide-gray-700">
+          <div className="divide-y divide-gray-100 dark:divide-black/70">
             <div className="px-5 py-3 flex items-center">
               <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full mr-3">
                 <FiMail className="w-4 h-4 text-blue-500 dark:text-blue-400" />
@@ -305,7 +305,7 @@ const Profil = () => {
       {/* Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-80 shadow-lg">
+          <div className="bg-white dark:hover:bg-gray-900 rounded-lg p-6 w-80 shadow-lg">
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
               Modifier le profil
             </h2>
@@ -316,7 +316,7 @@ const Profil = () => {
                 placeholder="Prénom"
                 value={editForm.prenom}
                 onChange={handleFormChange}
-                className="w-full p-2 rounded-md border dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full p-2 rounded-md border dark:hover:bg-gray-900 dark:border-black/60 dark:text-white"
                 required
               />
               <input
@@ -325,7 +325,7 @@ const Profil = () => {
                 placeholder="Nom"
                 value={editForm.nom}
                 onChange={handleFormChange}
-                className="w-full p-2 rounded-md border dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full p-2 rounded-md border dark:bg-black/70 dark:border-black/60 dark:text-white"
                 required
               />
               <input
@@ -334,13 +334,13 @@ const Profil = () => {
                 placeholder="Âge"
                 value={editForm.age}
                 onChange={handleFormChange}
-                className="w-full p-2 rounded-md border dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                className="w-full p-2 rounded-md border dark:bg-black/70 dark:border-black/60 dark:text-white"
               />
               <div className="flex justify-end space-x-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-sm bg-gray-300 hover:bg-gray-400 rounded-md dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white"
+                  className="px-4 py-2 text-sm bg-gray-300 hover:bg-gray-400 rounded-md dark:bg-black/70 dark:hover:bg-black/60 text-gray-800 dark:text-white"
                 >
                   Annuler
                 </button>

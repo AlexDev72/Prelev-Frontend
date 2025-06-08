@@ -83,20 +83,19 @@ const handleSubmit = (e) => {
     return date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
   };
 
-  const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-gray-50';
+  const bgColor = isDarkMode ? 'bg-black' : 'bg-gray-50';
   const textColor = isDarkMode ? 'text-gray-100' : 'text-gray-800';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300';
-  const buttonBg = isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700';
+  const buttonBg = isDarkMode ? 'bg-green-700 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700';
   const dateHoverBg = isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100';
   const navButtonBg = isDarkMode ? 'bg-gray-700' : 'bg-white';
-  const selectedDateBg = isDarkMode ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white';
+  const selectedDateBg = isDarkMode ? 'bg-green-700 text-white' : 'bg-green-500 text-white';
 
   return (
     <div className={`min-h-screen p-4 ${bgColor} ${textColor}`}>
       {/* Header */}
       <header className="mb-6">
-        <h1 className="text-2xl font-bold">Nouveau prélèvement</h1>
         <div className="flex justify-between items-center mt-4">
           <button onClick={() => changeWeek(-7)} className={`p-2 rounded-full ${navButtonBg} shadow-sm`}>
             <FiChevronLeft className="w-5 h-5" />
@@ -131,9 +130,9 @@ const handleSubmit = (e) => {
       </div>
 
       {/* Date sélectionnée */}
-      <div className={`mb-6 p-4 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-blue-50'}`}>
+      <div className={`mb-6 p-4 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-green-50'}`}>
         <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Date sélectionnée</p>
-        <p className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>{formatDate(currentDate)}</p>
+        <p className={`font-medium ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>{formatDate(currentDate)}</p>
       </div>
 
       {/* Formulaire */}
