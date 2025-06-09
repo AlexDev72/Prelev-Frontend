@@ -6,12 +6,12 @@ import "react-day-picker/dist/style.css";
 const CalendrierMultiMois = () => {
   const [selected, setSelected] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('darkMode');
+    if (typeof window !== "undefined") {
+      const savedMode = localStorage.getItem("darkMode");
       if (savedMode !== null) {
-        return savedMode === 'true';
+        return savedMode === "true";
       }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
     return false;
   });
@@ -22,29 +22,30 @@ const CalendrierMultiMois = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [joursAvecPrelevements, setJoursAvecPrelevements] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const htmlElement = document.documentElement;
-    
+
     if (isDarkMode) {
-      htmlElement.classList.add('dark');
-      localStorage.setItem('darkMode', 'true');
+      htmlElement.classList.add("dark");
+      localStorage.setItem("darkMode", "true");
     } else {
-      htmlElement.classList.remove('dark');
-      localStorage.setItem('darkMode', 'false');
+      htmlElement.classList.remove("dark");
+      localStorage.setItem("darkMode", "false");
     }
 
     const observer = new MutationObserver(() => {
-      const isNowDark = htmlElement.classList.contains('dark');
+      const isNowDark = htmlElement.classList.contains("dark");
       if (isNowDark !== isDarkMode) {
         setIsDarkMode(isNowDark);
-        localStorage.setItem('darkMode', String(isNowDark));
+        localStorage.setItem("darkMode", String(isNowDark));
       }
     });
 
     observer.observe(htmlElement, {
       attributes: true,
-      attributeFilter: ['class'],
+      attributeFilter: ["class"],
     });
 
     return () => observer.disconnect();
@@ -52,7 +53,7 @@ const CalendrierMultiMois = () => {
 
   useEffect(() => {
     const fetchPrelevements = async () => {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
       try {
         const response = await axios.get(
@@ -63,14 +64,15 @@ const CalendrierMultiMois = () => {
           }
         );
 
-        const jours = response.data
-          .filter(p => true)
-          .map(p => p.jour);
+        const jours = response.data.filter((p) => true).map((p) => p.jour);
 
         const joursUniques = [...new Set(jours)];
         setJoursAvecPrelevements(joursUniques);
       } catch (err) {
-        console.error("Erreur lors du chargement des jours de prélèvements", err);
+        console.error(
+          "Erreur lors du chargement des jours de prélèvements",
+          err
+        );
         setJoursAvecPrelevements([]);
       }
     };
@@ -82,13 +84,15 @@ const CalendrierMultiMois = () => {
     setSelected(day);
     setJourSelectionne(day);
     setShowModal(true);
+    setTimeout(() => setModalVisible(true), 10); // petit délai pour déclencher la transition
+
     setLoading(true);
     setError("");
     setPrelevements([]);
     const token = localStorage.getItem("token");
-    
+
     const formatDateLocal = (date) => {
-      const day = (`0${date.getDate()}`).slice(-2);
+      const day = `0${date.getDate()}`.slice(-2);
       return `${day}`;
     };
 
@@ -111,22 +115,28 @@ const CalendrierMultiMois = () => {
   };
 
   const closeModal = () => {
-    setShowModal(false);
-    setPrelevements([]);
-    setError("");
+    setModalVisible(false);
+    setTimeout(() => {
+      setShowModal(false);
+      setPrelevements([]);
+      setError("");
+    }, 300); // délai équivalent à la durée de l'animation
   };
 
   const nombreMois = 12;
-  const moisArray = Array.from({ length: nombreMois }, (_, i) => new Date(selectedYear, i, 1));
+  const moisArray = Array.from(
+    { length: nombreMois },
+    (_, i) => new Date(selectedYear, i, 1)
+  );
 
   const modifiers = {
     prelevement: (date) => {
       return joursAvecPrelevements.includes(date.getDate());
-    }
+    },
   };
 
   const modifiersClassNames = {
-    prelevement: "bg-green-400 text-black rounded-full"
+    prelevement: "bg-green-400 text-black rounded-full",
   };
 
   const years = [];
@@ -153,7 +163,9 @@ const CalendrierMultiMois = () => {
           }`}
         >
           {years.map((year) => (
-            <option key={year} value={year}>{year}</option>
+            <option key={year} value={year}>
+              {year}
+            </option>
           ))}
         </select>
       </div>
@@ -163,7 +175,9 @@ const CalendrierMultiMois = () => {
           <div
             key={index}
             className={`p-4 rounded border ${
-              isDarkMode ? "bg-gray-900 border-gray-700" : "bg-white border-black"
+              isDarkMode
+                ? "bg-gray-900 border-gray-700"
+                : "bg-white border-black"
             }`}
           >
             <DayPicker
@@ -182,11 +196,12 @@ const CalendrierMultiMois = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-end z-50 transition-opacity duration-300">
           <div
-            className={`p-6 rounded-lg shadow-md w-[90%] max-w-md ${
-              isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"
-            }`}
+            className={`w-full rounded-t-2xl shadow-md p-6 transform transition-transform duration-300 ${
+              modalVisible ? "translate-y-0" : "translate-y-full"
+            } ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}
+            style={{ maxHeight: "85vh", overflowY: "auto" }}
           >
             <h2 className="text-lg font-bold mb-4">
               Prélèvements du {jourSelectionne?.toLocaleDateString("fr-FR")}
@@ -201,8 +216,29 @@ const CalendrierMultiMois = () => {
             {!loading && prelevements.length > 0 && (
               <ul className="list-disc list-inside space-y-2">
                 {prelevements.map((p, index) => (
-                  <li key={index}>
-                    <strong>{p.nom}</strong> — {p.prix}€ — Jour : {p.jour}
+                  <li key={index} className="flex items-center gap-2">
+                    <div
+                      style={{
+                        width: "3rem",
+                        height: "3rem",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        src={`/logos/${p.nom}.png`}
+                        alt={p.nom}
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                    <span>
+                      <strong>{p.nom}</strong> — {p.prix}€
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -210,7 +246,7 @@ const CalendrierMultiMois = () => {
 
             <button
               onClick={closeModal}
-              className="mt-6 px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+              className="mt-6 w-full px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
             >
               Fermer
             </button>

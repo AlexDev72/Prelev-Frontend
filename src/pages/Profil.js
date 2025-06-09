@@ -1,5 +1,5 @@
 import {
-  FiEdit,
+  FiLogOut,
   FiSettings,
   FiMail,
   FiCalendar,
@@ -8,8 +8,11 @@ import {
   FiMoon,
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
+import React, { useContext } from "react";
+import { ConnexionContext } from "../context/ConnexionContext";
 
 const Profil = () => {
+  const { logout } = useContext(ConnexionContext);
   const [userData, setUserData] = useState({
     nom: "",
     prenom: "",
@@ -185,7 +188,7 @@ const Profil = () => {
   }
 
   return (
-   <div className="min-h-screen bg-gray-50 dark:bg-black pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-black pb-20">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
@@ -201,22 +204,30 @@ const Profil = () => {
             </button>
 
             {showSettingsDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-black/80 rounded-md shadow-lg py-1 z-20 border border-gray-200 dark:border-black/70">
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-black/80 rounded-xl shadow-xl py-2 z-20 border border-gray-200 dark:border-black/70">
                 <button
                   onClick={toggleDarkMode}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-black/70 w-full text-left"
+                  className="flex items-center gap-2 px-5 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-black/70 w-full text-left transition rounded-md"
                 >
                   {darkMode ? (
                     <>
-                      <FiSun className="mr-2" />
+                      <FiSun className="text-lg" />
                       Mode clair
                     </>
                   ) : (
                     <>
-                      <FiMoon className="mr-2" />
+                      <FiMoon className="text-lg" />
                       Mode sombre
                     </>
                   )}
+                </button>
+
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 px-5 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 w-full text-left transition rounded-md"
+                >
+                  <FiLogOut className="text-lg" />
+                  Se déconnecter
                 </button>
               </div>
             )}
