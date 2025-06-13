@@ -1,4 +1,5 @@
-import React, { useEffect, useState,  useContext} from "react";
+import React, { useEffect, useState, useContext } from "react";
+import axios from "axios";
 import { Card, CardContent } from "../components/ui/card";
 import { ConnexionContext } from "../context/ConnexionContext";
 import {
@@ -10,70 +11,60 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const HomePage = () => {  
+const HomePage = () => {
   const { logout } = useContext(ConnexionContext);
-  const [totalPrelevements, setTotalPrelevements] = useState(0);
+
   const [totalMontant, setTotalMontant] = useState(0);
+  const [totalPrelevements, setTotalPrelevements] = useState(0);
   const [prelevementsAvenir, setPrelevementsAvenir] = useState([]);
   const [prelevementsParMois, setPrelevementsParMois] = useState([]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log(token);
-    if (!token) {
-      setError("Token non trouvé, veuillez vous connecter.");
-      return;
-    }
+useEffect(() => {
+  const token = localStorage.getItem("token");
 
-    fetch("http://192.168.1.22:8080/prelevements/total", {
-      method: "GET",
-      headers: {
+  const fetchDashboardData = async () => {
+    try {
+      const headers = {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return res.text().then((text) => {
-            throw new Error(`Erreur ${res.status} : ${text}`);
-          });
-        }
-        return res.json();
-      })
-      .then((data) => {
-        // Supposons que la réponse a cette forme :
-        // {
-        //   totalPrelevements: number,
-        //   totalMontant: number,
-        //   prelevementsAvenir: [{ nom, date, montant }],
-        //   prelevementsParMois: [{ mois, total }]
-        // }
+        withCredentials: true,
+      };
 
-        setTotalPrelevements(data.totalPrelevements || 0);
-        setTotalMontant(data.totalMontant || 0);
-        setPrelevementsAvenir(data.prelevementsAvenir || []);
-        setPrelevementsParMois(data.prelevementsParMois || []);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message);
-      });
-  }, []); // [] pour que ça ne se lance qu’une fois au montage
+      // Récupération du montant total
+      const totalMontantRes = await axios.get("http://192.168.1.22:8080/prelevement/total", { headers });
+      setTotalMontant(totalMontantRes.data);
+
+      // Récupération des prélèvements à venir
+      const avenirRes = await axios.get("http://192.168.1.22:8080/prelevement/avenir", { headers });
+      setPrelevementsAvenir(avenirRes.data);
+
+      // Récupération des prélèvements par mois
+      const parMoisRes = await axios.get("http://192.168.1.22:8080/prelevement/par-mois", { headers });
+      setPrelevementsParMois(parMoisRes.data);
+
+    } catch (error) {
+      console.error("Erreur lors du chargement des données du tableau de bord :", error);
+      setError("Impossible de charger les données.");
+    }
+  };
+
+  fetchDashboardData();
+}, []);
+
 
   return (
     <div className="p-4 space-y-6 md:space-y-8 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
         Tableau de bord
       </h1>
-    <button
-                  onClick={logout}
-                  className="flex items-center gap-2 px-5 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 w-full text-left transition rounded-md"
-                >
-                 
-                  Se déconnecter
-                </button>
+
+      <button
+        onClick={logout}
+        className="flex items-center gap-2 px-5 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 w-full text-left transition rounded-md"
+      >
+        Se déconnecter
+      </button>
+
       {error && (
         <div className="text-red-600 dark:text-red-400 font-semibold mb-4">
           {error}
@@ -112,18 +103,46 @@ const HomePage = () => {
           {prelevementsAvenir.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400">Aucun prélèvement à venir</p>
           ) : (
-            <ul className="space-y-3">
-              {prelevementsAvenir.map((item, index) => (
-                <li key={index} className="flex justify-between items-center">
-                  <span className="text-gray-700 dark:text-gray-300">
-                    {item.nom} - {item.date}
-                  </span>
-                  <span className="font-medium text-gray-800 dark:text-white">
-                    {item.montant.toFixed(2)} €
-                  </span>
-                </li>
-              ))}
-            </ul>
+<ul className="space-y-3">
+  {prelevementsAvenir
+    .slice()
+    .sort((a, b) => {
+      const dayA = new Date(a.datePrelevement).getDate();
+      const dayB = new Date(b.datePrelevement).getDate();
+      return dayA - dayB;
+    })
+    .map((item, index) => {
+      const date = new Date(item.datePrelevement);
+      const currentMonthName = new Date().toLocaleDateString('fr-FR', {
+        month: 'long',
+      });
+      const day = date.getDate().toString().padStart(2, '0');
+
+      const logoName = item.nom.toLowerCase().replace(/\s+/g, '') + ".png";
+      const logoPath = `/logos/${logoName}`; // stocké dans public/logos/
+
+      return (
+        <li key={index} className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <img src={logoPath} alt={item.nom}  style={{
+                          maxWidth: "40px",
+                          maxHeight: "40px",
+                          objectFit: "contain",
+                        }} />
+            <span className="text-gray-700 dark:text-gray-300">
+              {day} {currentMonthName}
+            </span>
+          </div>
+          <span className="font-medium text-gray-800 dark:text-white">
+            {item.prix.toFixed(2)} €
+          </span>
+        </li>
+      );
+    })}
+</ul>
+
+
+
           )}
         </CardContent>
       </Card>
