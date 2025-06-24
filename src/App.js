@@ -1,5 +1,5 @@
-// src/App.js
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import HomePage from './pages/HomePage';  
 import Connexion from './pages/Connexion';
 import Inscription from './pages/Inscription';
@@ -9,13 +9,29 @@ import Navigation from './components/Navigation';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/ConnexionContext';
 import '@fontsource/inter';
-import { useLocation } from 'react-router-dom';
 import AjoutPrelevement from './pages/AjoutPrelevement';
-
 
 const AppContent = () => {
   const location = useLocation();
   const hideNavbar = location.pathname === '/connexion' || location.pathname === '/inscription';
+
+  // ✅ Detecte systeme dark mode et l'applique
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const applyTheme = (e) => {
+      if (e.matches) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    };
+
+    applyTheme(mediaQuery); // premier appel
+    mediaQuery.addEventListener("change", applyTheme); // écoute les changements
+
+    return () => mediaQuery.removeEventListener("change", applyTheme);
+  }, []);
 
   return (
     <div className="App">
@@ -29,7 +45,7 @@ const AppContent = () => {
             </PrivateRoute>
           }
         />
-                <Route
+        <Route
           path="/profil"
           element={
             <PrivateRoute>
@@ -37,7 +53,7 @@ const AppContent = () => {
             </PrivateRoute>
           }
         />
-             <Route
+        <Route
           path="/calendrier"
           element={
             <PrivateRoute>
@@ -45,7 +61,7 @@ const AppContent = () => {
             </PrivateRoute>
           }
         />
-         <Route
+        <Route
           path="/ajout"
           element={
             <PrivateRoute>
@@ -71,5 +87,3 @@ const App = () => {
 };
 
 export default App;
-
-

@@ -43,25 +43,22 @@ const Inscription = () => {
   };
 
   return (
-    <div className="min-h-screen bg-green-50 flex flex-col justify-center p-4">
-      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
-        {/* En-tête */}
+   <div className="min-h-screen bg-green-50 dark:bg-black flex flex-col justify-center p-4">
+      <div className="w-full max-w-md mx-auto bg-white dark:bg-zinc-800 rounded-lg shadow-sm p-6">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Inscription</h1>
-          <p className="text-gray-600 mt-2">Créez votre compte</p>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Inscription</h1>
+          <p className="text-gray-600 dark:text-zinc-300 mt-2">Créez votre compte</p>
         </div>
 
-        {/* Message d'erreur (style amélioré) */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        {/* Formulaire simplifié (2 champs comme dans votre original) */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
               Email
             </label>
             <input
@@ -69,7 +66,7 @@ const Inscription = () => {
               type="email"
               autoComplete="email"
               placeholder="votre@email.com"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -77,7 +74,7 @@ const Inscription = () => {
           </div>
 
           <div>
-            <label htmlFor="mdp" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="mdp" className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
               Mot de passe
             </label>
             <input
@@ -85,7 +82,7 @@ const Inscription = () => {
               type="password"
               autoComplete="new-password"
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition"
               value={mdp}
               onChange={(e) => setMdp(e.target.value)}
               required
@@ -95,7 +92,9 @@ const Inscription = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 px-4 rounded-lg font-medium text-white ${isLoading ? 'bg-green-600' : 'bg-green-700 hover:bg-green-800'} transition flex justify-center items-center`}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white ${
+              isLoading ? 'bg-green-600' : 'bg-green-700 hover:bg-green-800'
+            } transition flex justify-center items-center`}
           >
             {isLoading ? (
               <>
@@ -109,11 +108,10 @@ const Inscription = () => {
           </button>
         </form>
 
-        {/* Lien vers connexion (optionnel) */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             Déjà inscrit ?{' '}
-            <a href="/connexion" className="text-green-700 font-medium hover:underline">
+            <a href="/connexion" className="text-green-700 dark:text-green-400 font-medium hover:underline">
               Se connecter
             </a>
           </p>

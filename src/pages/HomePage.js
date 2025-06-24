@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent } from "../components/ui/card";
 import { ConnexionContext } from "../context/ConnexionContext";
@@ -13,47 +14,60 @@ import {
 
 const HomePage = () => {
   const { logout } = useContext(ConnexionContext);
-
+  const navigate = useNavigate();
   const [totalMontant, setTotalMontant] = useState(0);
   const [totalPrelevements, setTotalPrelevements] = useState(0);
   const [prelevementsAvenir, setPrelevementsAvenir] = useState([]);
   const [prelevementsParMois, setPrelevementsParMois] = useState([]);
   const [error, setError] = useState(null);
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-  const fetchDashboardData = async () => {
-    try {
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        withCredentials: true,
-      };
+    const fetchDashboardData = async () => {
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+          withCredentials: true,
+        };
 
-      // Récupération du montant total
-      const totalMontantRes = await axios.get("http://192.168.1.22:8080/prelevement/total", { headers });
-      setTotalMontant(totalMontantRes.data);
+        const totalMontantRes = await axios.get(
+          "http://192.168.1.22:8080/prelevement/total",
+          { headers }
+        );
+        setTotalMontant(totalMontantRes.data);
 
-      // Récupération des prélèvements à venir
-      const avenirRes = await axios.get("http://192.168.1.22:8080/prelevement/avenir", { headers });
-      setPrelevementsAvenir(avenirRes.data);
+        const totalPrelevementsRes = await axios.get(
+          "http://192.168.1.22:8080/prelevement/totalprelev",
+          { headers }
+        );
+        setTotalPrelevements(totalPrelevementsRes.data);
 
-      // Récupération des prélèvements par mois
-      const parMoisRes = await axios.get("http://192.168.1.22:8080/prelevement/par-mois", { headers });
-      setPrelevementsParMois(parMoisRes.data);
+        const avenirRes = await axios.get(
+          "http://192.168.1.22:8080/prelevement/avenir",
+          { headers }
+        );
+        setPrelevementsAvenir(avenirRes.data);
 
-    } catch (error) {
-      console.error("Erreur lors du chargement des données du tableau de bord :", error);
-      setError("Impossible de charger les données.");
-    }
-  };
+        const parMoisRes = await axios.get(
+          "http://192.168.1.22:8080/prelevement/par-mois",
+          { headers }
+        );
+        setPrelevementsParMois(parMoisRes.data);
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement des données du tableau de bord :",
+          error
+        );
+        setError("Impossible de charger les données.");
+      }
+    };
 
-  fetchDashboardData();
-}, []);
-
+    fetchDashboardData();
+  }, []);
 
   return (
-    <div className="p-4 space-y-6 md:space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 space-y-6 md:space-y-8 max-w-7xl mx-auto bg-gray-100 dark:bg-black min-h-screen">
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
         Tableau de bord
       </h1>
@@ -75,7 +89,7 @@ useEffect(() => {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Nombre total de prélèvements
+              Nombre total de prélèvements ce mois-ci
             </p>
             <p className="text-2xl font-semibold text-gray-800 dark:text-white">
               {totalPrelevements}
@@ -101,48 +115,58 @@ useEffect(() => {
             Prélèvements à venir
           </h2>
           {prelevementsAvenir.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">Aucun prélèvement à venir</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              Aucun prélèvement à venir
+            </p>
           ) : (
-<ul className="space-y-3">
-  {prelevementsAvenir
-    .slice()
-    .sort((a, b) => {
-      const dayA = new Date(a.datePrelevement).getDate();
-      const dayB = new Date(b.datePrelevement).getDate();
-      return dayA - dayB;
-    })
-    .map((item, index) => {
-      const date = new Date(item.datePrelevement);
-      const currentMonthName = new Date().toLocaleDateString('fr-FR', {
-        month: 'long',
-      });
-      const day = date.getDate().toString().padStart(2, '0');
+            <ul className="space-y-3">
+              {prelevementsAvenir
+                .slice()
+                .sort((a, b) => {
+                  const dayA = new Date(a.datePrelevement).getDate();
+                  const dayB = new Date(b.datePrelevement).getDate();
+                  return dayA - dayB;
+                })
+                .map((item, index) => {
+                  const date = new Date(item.datePrelevement);
+                  const currentMonthName = new Date().toLocaleDateString(
+                    "fr-FR",
+                    {
+                      month: "long",
+                    }
+                  );
+                  const day = date.getDate().toString().padStart(2, "0");
 
-      const logoName = item.nom.toLowerCase().replace(/\s+/g, '') + ".png";
-      const logoPath = `/logos/${logoName}`; // stocké dans public/logos/
+                  const logoName =
+                    item.nom.toLowerCase().replace(/\s+/g, "") + ".png";
+                  const logoPath = `/logos/${logoName}`; // stocké dans public/logos/
 
-      return (
-        <li key={index} className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <img src={logoPath} alt={item.nom}  style={{
-                          maxWidth: "40px",
-                          maxHeight: "40px",
-                          objectFit: "contain",
-                        }} />
-            <span className="text-gray-700 dark:text-gray-300">
-              {day} {currentMonthName}
-            </span>
-          </div>
-          <span className="font-medium text-gray-800 dark:text-white">
-            {item.prix.toFixed(2)} €
-          </span>
-        </li>
-      );
-    })}
-</ul>
-
-
-
+                  return (
+                    <li
+                      key={index}
+                      className="flex justify-between items-center"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src={logoPath}
+                          alt={item.nom}
+                          style={{
+                            maxWidth: "40px",
+                            maxHeight: "40px",
+                            objectFit: "contain",
+                          }}
+                        />
+                        <span className="text-gray-700 dark:text-gray-300">
+                          {day} {currentMonthName}
+                        </span>
+                      </div>
+                      <span className="font-medium text-gray-800 dark:text-white">
+                        {item.prix.toFixed(2)} €
+                      </span>
+                    </li>
+                  );
+                })}
+            </ul>
           )}
         </CardContent>
       </Card>
@@ -153,18 +177,63 @@ useEffect(() => {
             Prélèvements par mois
           </h2>
           {prelevementsParMois.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">Aucune donnée disponible</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              Aucune donnée disponible
+            </p>
           ) : (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={prelevementsParMois}>
-                  <XAxis dataKey="mois" stroke="#888888" />
-                  <YAxis stroke="#888888" />
-                  <Tooltip />
-                  <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <>
+              <ul className="space-y-3 mb-4">
+                {prelevementsParMois
+                  .sort((a, b) => a.datePrelevement - b.datePrelevement) // tri croissant
+                  .slice(0, 5)
+                  .map((item, index) => {
+                    const day = item.datePrelevement
+                      .toString()
+                      .padStart(2, "0");
+
+                    const now = new Date();
+                    const monthName = now.toLocaleDateString("fr-FR", {
+                      month: "long",
+                    });
+
+                    const logoName =
+                      item.nom.toLowerCase().replace(/\s+/g, "") + ".png";
+                    const logoPath = `/logos/${logoName}`;
+
+                    return (
+                      <li
+                        key={index}
+                        className="flex justify-between items-center"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <img
+                            src={logoPath}
+                            alt={item.nom}
+                            style={{
+                              maxWidth: "40px",
+                              maxHeight: "40px",
+                              objectFit: "contain",
+                            }}
+                          />
+                          <span className="text-gray-700 dark:text-gray-300">
+                            {day} {monthName}
+                          </span>
+                        </div>
+                        <span className="font-medium text-gray-800 dark:text-white">
+                          {item.prix.toFixed(2)} €
+                        </span>
+                      </li>
+                    );
+                  })}
+              </ul>
+
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="w-full px-4 py-2 bg-green-600 text-white text-center rounded-md hover:bg-blue-700 transition active:scale-95"
+              >
+                Voir plus
+              </button>
+            </>
           )}
         </CardContent>
       </Card>

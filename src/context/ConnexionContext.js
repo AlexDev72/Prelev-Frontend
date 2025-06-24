@@ -1,27 +1,38 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
+import axios from "axios";
 
 export const ConnexionContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Nouvel état pour le chargement
+  const [isLoading, setIsLoading] = useState(true);
 
-  /**
-   * Restauration de la session au montage du composant
-   */
-  const restoreSession = useCallback(() => {
+  const restoreSession = useCallback(async () => {
     setIsLoading(true);
     const savedUser = localStorage.getItem("user");
-
-    if (savedUser) {
+    const token = localStorage.getItem("token");
+    console.log("[restoreSession] token :", token);
+    if (savedUser && token) {
       try {
-        const parsedUser = JSON.parse(savedUser);
-        // Ici vous pourriez vérifier la validité du token côté serveur
-        setUser(parsedUser);
+        // Vérifie le token avec une requête protégée
+        const response = await axios.get("http://192.168.1.22:8080/utilisateur/verifie", {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+
+        if (response.status === 200) {
+          setUser(JSON.parse(savedUser));
+        } else {
+          logout();
+        }
       } catch (error) {
-        localStorage.removeItem("user");
+        console.error("[restoreSession] Token invalide ou expiré :", error.message);
+        logout();
       }
+    } else {
+      logout();
     }
+
     setIsLoading(false);
   }, []);
 
@@ -29,30 +40,26 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   }, [restoreSession]);
 
-  const login = (userData) => {
+  const login = (userData, token) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", token);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("token");
-
-    // 2. Optionnel: Supprimer d'autres données utilisateur
-    localStorage.removeItem("userData");
-    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
-    // Optionnel : nettoyer d'autres données de session
+    localStorage.removeItem("token");
   };
 
   return (
     <ConnexionContext.Provider
       value={{
         user,
-        isLoading, // Exposé pour PrivateRoute
+        isLoading,
         login,
         logout,
-        restoreSession, // Exposé pour permettre une restauration manuelle
+        restoreSession,
       }}
     >
       {children}

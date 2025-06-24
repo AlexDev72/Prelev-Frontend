@@ -5,26 +5,22 @@ import { ConnexionContext } from '../context/ConnexionContext';
 const PrivateRoute = ({ children }) => {
   const { user, isLoading, restoreSession } = useContext(ConnexionContext);
   const location = useLocation();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isSessionChecked, setIsSessionChecked] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      await restoreSession(); // Implémentez cette fonction dans votre contexte
-      setIsCheckingAuth(false);
+    const checkSession = async () => {
+      await restoreSession();
+      setIsSessionChecked(true);
     };
-    
-    if (!user?.token) {
-      checkAuth();
-    } else {
-      setIsCheckingAuth(false);
-    }
+
+    checkSession();
   }, []);
 
-  if (isLoading || isCheckingAuth) {
+  if (isLoading || !isSessionChecked) {
     return <div>Chargement...</div>;
   }
 
-  if (!user?.token) {
+  if (!user) {
     return <Navigate to="/connexion" state={{ from: location }} replace />;
   }
 

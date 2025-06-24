@@ -24,32 +24,6 @@ const CalendrierMultiMois = () => {
   const [joursAvecPrelevements, setJoursAvecPrelevements] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    const htmlElement = document.documentElement;
-
-    if (isDarkMode) {
-      htmlElement.classList.add("dark");
-      localStorage.setItem("darkMode", "true");
-    } else {
-      htmlElement.classList.remove("dark");
-      localStorage.setItem("darkMode", "false");
-    }
-
-    const observer = new MutationObserver(() => {
-      const isNowDark = htmlElement.classList.contains("dark");
-      if (isNowDark !== isDarkMode) {
-        setIsDarkMode(isNowDark);
-        localStorage.setItem("darkMode", String(isNowDark));
-      }
-    });
-
-    observer.observe(htmlElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, [isDarkMode]);
 
   useEffect(() => {
     const fetchPrelevements = async () => {
@@ -137,6 +111,7 @@ const CalendrierMultiMois = () => {
 
   const modifiersClassNames = {
     prelevement: "bg-green-400 text-black rounded-full",
+     today: "text-green-600 font-bold",
   };
 
   const years = [];
@@ -158,7 +133,7 @@ const CalendrierMultiMois = () => {
           onChange={(e) => setSelectedYear(Number(e.target.value))}
           className={`p-1 rounded border ${
             isDarkMode
-              ? "bg-gray-900 border-gray-700 text-white"
+              ? "bg-zinc-900 border-zinc-700 text-white"
               : "bg-white border-black text-black"
           }`}
         >
@@ -176,7 +151,7 @@ const CalendrierMultiMois = () => {
             key={index}
             className={`p-4 rounded border ${
               isDarkMode
-                ? "bg-gray-900 border-gray-700"
+                ? "bg-zinc-900 border-zinc-700"
                 : "bg-white border-black"
             }`}
           >
@@ -200,7 +175,7 @@ const CalendrierMultiMois = () => {
           <div
             className={`w-full rounded-t-2xl shadow-md p-6 transform transition-transform duration-300 ${
               modalVisible ? "translate-y-0" : "translate-y-full"
-            } ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}
+            } ${isDarkMode ? "bg-zinc-900 text-white" : "bg-white text-black"}`}
             style={{ maxHeight: "85vh", overflowY: "auto" }}
           >
             <h2 className="text-lg font-bold mb-4">
@@ -246,7 +221,7 @@ const CalendrierMultiMois = () => {
 
             <button
               onClick={closeModal}
-              className="mt-6 w-full px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+              className="mt-6 w-full px-4 py-2 rounded bg-green-600 text-white hover:bg-green-600"
             >
               Fermer
             </button>

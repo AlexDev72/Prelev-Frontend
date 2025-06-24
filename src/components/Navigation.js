@@ -15,12 +15,12 @@ const Navigation = () => {
    */
 
   return (
-    <div class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 left-1/2 bottom-[0rem] dark:bg-gray-800 dark:border-gray-600">
+    <div class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 left-1/2 bottom-[0rem] dark:bg-zinc-900 dark:border-zinc-800">
       <div class="grid h-full max-w-lg grid-cols-5 mx-auto">
         <div className="relative group">
           <Link
             to="/"
-            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-zinc-800"
             style={{ display: "flex", height: "100%" }}
           >
             <button
@@ -28,7 +28,7 @@ const Navigation = () => {
               className="inline-flex items-center justify-center w-full h-full"
             >
               <svg
-                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-500"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -61,7 +61,7 @@ const Navigation = () => {
         <div className="relative group">
           <Link
             to="/calendrier"
-            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-zinc-800"
             style={{ display: "flex", height: "100%" }}
           >
             <button
@@ -69,7 +69,7 @@ const Navigation = () => {
               className="inline-flex items-center justify-center w-full h-full"
             >
               <svg
-                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-green-500"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -127,10 +127,10 @@ const Navigation = () => {
         <button
           data-tooltip-target="tooltip-settings"
           type="button"
-          class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
+          class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-zinc-800 group"
         >
           <svg
-            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+            class="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-green-500"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -159,7 +159,7 @@ const Navigation = () => {
           {/* Ajoutez 'group' ici pour les hover states */}
           <Link
             to="/profil"
-            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-zinc-800"
             style={{ display: "flex", height: "100%" }} // Conserve la hauteur
           >
             <button
@@ -167,7 +167,7 @@ const Navigation = () => {
               className="inline-flex items-center justify-center w-full h-full"
             >
               <svg
-                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500"
+                className="w-5 h-5 mb-1 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-green-500"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
