@@ -1,19 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Card, CardContent } from "../components/ui/card";
-import { ConnexionContext } from "../context/ConnexionContext";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+
+
 
 const HomePage = () => {
-  const { logout } = useContext(ConnexionContext);
   const navigate = useNavigate();
   const [totalMontant, setTotalMontant] = useState(0);
   const [totalPrelevements, setTotalPrelevements] = useState(0);
@@ -72,12 +64,7 @@ const HomePage = () => {
         Tableau de bord
       </h1>
 
-      <button
-        onClick={logout}
-        className="flex items-center gap-2 px-5 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 w-full text-left transition rounded-md"
-      >
-        Se déconnecter
-      </button>
+   
 
       {error && (
         <div className="text-red-600 dark:text-red-400 font-semibold mb-4">
@@ -229,7 +216,7 @@ const HomePage = () => {
 
               <button
                 onClick={() => navigate("/dashboard")}
-                className="w-full px-4 py-2 bg-green-600 text-white text-center rounded-md hover:bg-blue-700 transition active:scale-95"
+                className="w-full px-4 py-2 bg-green-600 text-white text-center rounded-md hover:bg-green-700 transition active:scale-95"
               >
                 Voir plus
               </button>

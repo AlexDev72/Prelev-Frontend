@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 const CalendrierMultiMois = () => {
   const [selected, setSelected] = useState(null);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  const [isDarkMode] = useState(() => {
     if (typeof window !== "undefined") {
       const savedMode = localStorage.getItem("darkMode");
       if (savedMode !== null) {
@@ -111,7 +111,7 @@ const CalendrierMultiMois = () => {
 
   const modifiersClassNames = {
     prelevement: "bg-green-400 text-black rounded-full",
-     today: "text-green-600 font-bold",
+    today: "text-green-600 font-bold",
   };
 
   const years = [];

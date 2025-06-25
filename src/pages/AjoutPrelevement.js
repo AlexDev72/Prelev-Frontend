@@ -92,17 +92,17 @@ const handleSubmit = (e) => {
     });
   };
 
-  const bgColor = isDarkMode ? "bg-black" : "bg-gray-50";
+  const bgColor = isDarkMode ? "bg-black" : "bg-zinc-50";
   const textColor = isDarkMode ? "text-gray-100" : "text-gray-800";
-  const cardBg = isDarkMode ? "bg-gray-800" : "bg-white";
+  const cardBg = isDarkMode ? "bg-zinc-800" : "bg-white";
   const inputBg = isDarkMode
-    ? "bg-gray-700 border-gray-600 text-white"
+    ? "bg-zinc-700 border-zinc-600 text-white"
     : "bg-white border-gray-300";
   const buttonBg = isDarkMode
     ? "bg-green-700 hover:bg-green-700"
     : "bg-green-600 hover:bg-green-700";
   const dateHoverBg = isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100";
-  const navButtonBg = isDarkMode ? "bg-gray-700" : "bg-white";
+  const navButtonBg = isDarkMode ? "bg-zinc-700" : "bg-white";
   const selectedDateBg = isDarkMode
     ? "bg-green-700 text-white"
     : "bg-green-500 text-white";
@@ -160,12 +160,12 @@ const handleSubmit = (e) => {
       {/* Date sélectionnée */}
       <div
         className={`mb-6 p-4 rounded-xl ${
-          isDarkMode ? "bg-gray-800" : "bg-green-50"
+          isDarkMode ? "bg-zinc-800" : "bg-green-50"
         }`}
       >
         <p
           className={`text-sm ${
-            isDarkMode ? "text-gray-400" : "text-gray-600"
+            isDarkMode ? "text-zinc-400" : "text-zinc-600"
           }`}
         >
           Date sélectionnée

@@ -162,23 +162,23 @@ const Profil = () => {
 
   if (userData.loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }
 
   if (userData.error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center p-6 max-w-sm mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
+        <div className="text-center p-6 max-w-sm mx-auto bg-white dark:bg-zinc-800 rounded-lg shadow-md">
           <h3 className="text-lg font-medium text-red-600 dark:text-red-400 mb-2">
             Erreur de chargement
           </h3>
           <p className="text-gray-600 dark:text-gray-300">{userData.error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           >
             Réessayer
           </button>
@@ -188,9 +188,9 @@ const Profil = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black pb-20">
+    <div className="min-h-screen bg-zinc-50 dark:bg-black pb-20">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
+      <div className="bg-white dark:bg-zinc-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Profil
@@ -198,16 +198,16 @@ const Profil = () => {
           <div className="relative">
             <button
               onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-black/70"
+              className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-black/70"
             >
               <FiSettings className="w-5 h-5 text-gray-700 dark:text-gray-300" />
             </button>
 
             {showSettingsDropdown && (
-              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-black/80 rounded-xl shadow-xl py-2 z-20 border border-gray-200 dark:border-black/70">
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-black/80 rounded-xl shadow-xl py-2 z-20 border border-zinc-200 dark:border-black/70">
                 <button
                   onClick={toggleDarkMode}
-                  className="flex items-center gap-2 px-5 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-black/70 w-full text-left transition rounded-md"
+                  className="flex items-center gap-2 px-5 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-zinc-100 dark:hover:bg-black/70 w-full text-left transition rounded-md"
                 >
                   {darkMode ? (
                     <>
@@ -237,11 +237,11 @@ const Profil = () => {
 
       {/* Profile Card */}
       <div className="max-w-md mx-auto px-4 pt-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
           <div className="h-32 bg-gradient-to-r from-green-800 to-green-500"></div>
           <div className="px-5 pb-6 relative">
             <div className="flex justify-center -mt-16 mb-3">
-              <div className="w-24 h-24 rounded-full border-4 border-white dark:border-black/80 bg-gray-200 dark:bg-black/70 flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full border-4 border-white dark:border-black/80 bg-zinc-200 dark:bg-black/70 flex items-center justify-center">
                 <span className="text-3xl text-gray-700 dark:text-gray-300">
                   {userData.prenom.charAt(0).toUpperCase()}
                   {userData.nom.charAt(0).toUpperCase()}
@@ -265,15 +265,15 @@ const Profil = () => {
 
       {/* Informations */}
       <div className="max-w-md mx-auto px-4 mt-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 dark:border-black/70">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-md overflow-hidden">
+          <div className="px-5 py-4 border-b border-zinc-100 dark:border-black/70">
             <h3 className="font-semibold text-gray-900 dark:text-white">
               Informations
             </h3>
           </div>
           <div className="divide-y divide-gray-100 dark:divide-black/70">
             <div className="px-5 py-3 flex items-center">
-              <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-full mr-3">
+              <div className="bg-green-100 dark:bg-blue-900/30 p-2 rounded-full mr-3">
                 <FiMail className="w-4 h-4 text-blue-500 dark:text-blue-400" />
               </div>
               <div>
@@ -316,8 +316,8 @@ const Profil = () => {
       {/* Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:hover:bg-gray-900 rounded-lg p-6 w-80 shadow-lg">
-            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+          <div className="bg-white dark:hover:bg-zinc-900 dark:bg-zinc-800 rounded-lg p-6 w-80 shadow-lg">
+            <h2 className="text-lg font-bold mb-4 text-zinc-900 dark:text-white">
               Modifier le profil
             </h2>
             <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -327,7 +327,7 @@ const Profil = () => {
                 placeholder="Prénom"
                 value={editForm.prenom}
                 onChange={handleFormChange}
-                className="w-full p-2 rounded-md border dark:hover:bg-gray-900 dark:border-black/60 dark:text-white"
+                className="w-full p-2 rounded-md border dark:bg-black/70 dark:border-black/60 dark:text-white"
                 required
               />
               <input
@@ -351,14 +351,14 @@ const Profil = () => {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-sm bg-gray-300 hover:bg-gray-400 rounded-md dark:bg-black/70 dark:hover:bg-black/60 text-gray-800 dark:text-white"
+                  className="px-4 py-2 text-sm bg-zinc-300 hover:bg-zinc-400 rounded-md dark:bg-black/70 dark:hover:bg-black/60 text-gray-800 dark:text-white"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+                  className="px-4 py-2 text-sm bg-green-600 hover:bg-green-800 text-white rounded-md"
                 >
                   {isUpdating ? "Enregistrement..." : "Enregistrer"}
                 </button>
