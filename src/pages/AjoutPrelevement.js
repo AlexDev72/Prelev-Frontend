@@ -51,34 +51,38 @@ const AjoutPrelevement = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    fetch("http://192.168.1.22:8080/prelevement/cree", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({
-        ...formData,
-        datePrelevement: currentDate.toISOString().split("T")[0],
-        dateFin: formData.dateFin
-          ? new Date(formData.dateFin).toISOString()
-          : null,
-      }),
+  const token = localStorage.getItem("token");
+  console.log(token);
+  fetch("http://192.168.1.22:8080/prelevement/cree", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, // 🔒 Envoie le token ici
+    },
+    body: JSON.stringify({
+      ...formData,
+      datePrelevement: currentDate.toISOString().split("T")[0],
+      dateFin: formData.dateFin
+        ? new Date(formData.dateFin).toISOString()
+        : null,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) throw new Error("Erreur lors de la création");
+      return response.json();
     })
-      .then((response) => {
-        if (!response.ok) throw new Error("Erreur lors de la création");
-        return response.json();
-      })
-      .then((data) => {
-        alert("Prélèvement enregistré avec succès !");
-        setFormData({ nom: "", prix: "", dateFin: "", userId });
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("Une erreur est survenue.");
-      });
-  };
+    .then((data) => {
+      alert("Prélèvement enregistré avec succès !");
+      setFormData({ nom: "", prix: "", dateFin: "", userId });
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Une erreur est survenue.");
+    });
+};
 
   const formatDate = (date) => {
     return date.toLocaleDateString("fr-FR", {

@@ -67,7 +67,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div className="p-4 space-y-6 md:space-y-8 max-w-7xl mx-auto bg-gray-100 dark:bg-black min-h-screen">
+<div className="p-4 space-y-6 md:space-y-5 max-w-7xl mx-auto bg-gray-100 dark:bg-black min-h-screen pb-24">
       <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
         Tableau de bord
       </h1>
