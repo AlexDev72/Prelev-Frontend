@@ -9,7 +9,7 @@ import Navigation from './components/Navigation';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/ConnexionContext';
 import '@fontsource/inter';
-import AjoutPrelevement from './pages/AjoutPrelevement';
+import Ajout from './pages/Ajout';
 
 const AppContent = () => {
   const location = useLocation();
@@ -65,7 +65,7 @@ const AppContent = () => {
           path="/ajout"
           element={
             <PrivateRoute>
-              <AjoutPrelevement />
+              <Ajout />
             </PrivateRoute>
           }
         />
