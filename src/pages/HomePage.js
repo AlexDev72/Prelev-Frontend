@@ -1,57 +1,61 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Card, CardContent } from "../components/ui/card";
+import { Trash2, Pencil } from "lucide-react";
+import { formatDateForInput } from "../utils/dateUtils";
 
-const ITEMS_PER_PAGE = 5; // Nombre d'éléments affichés par page
-const SWIPE_THRESHOLD = 50; // Seuil (en pixels) pour déclencher un "swipe"
+// Constantes pour la pagination et le swipe
+const ITEMS_PER_PAGE = 5; // Nombre d'items par page
+const SWIPE_THRESHOLD = 50; // Seuil de détection du swipe
 
 const HomePage = () => {
-  // États pour les données
-  const [totalMontant, setTotalMontant] = useState(0); // Montant total des prélèvements
-  const [totalPrelevements, setTotalPrelevements] = useState(0); // Nombre total de prélèvements
-  const [prelevementsAvenir, setPrelevementsAvenir] = useState([]); // Liste des prélèvements à venir
-  const [prelevementsParMois, setPrelevementsParMois] = useState([]); // Liste des prélèvements par mois
-  const [error, setError] = useState(null); // Gestion des erreurs
-  const [currentPage, setCurrentPage] = useState(1); // Page actuelle (pagination)
-  const [swipeStates, setSwipeStates] = useState({}); // État du "swipe" pour chaque élément
+  // ============ ÉTATS ============
+  // Données du dashboard
+  const [totalMontant, setTotalMontant] = useState(0);
+  const [totalPrelevements, setTotalPrelevements] = useState(0);
+  const [prelevementsAvenir, setPrelevementsAvenir] = useState([]);
+  const [prelevementsParMois, setPrelevementsParMois] = useState([]);
+  const [error, setError] = useState(null);
+  
+  // Pagination et swipe
+  const [currentPage, setCurrentPage] = useState(1);
+  const [swipeStates, setSwipeStates] = useState({});
 
-  // États pour les modales (popups)
-  const [itemToDelete, setItemToDelete] = useState(null); // Élément à supprimer
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // Afficher/cacher la modale de suppression
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // Afficher/cacher la modale de succès
-  const [isDeleting, setIsDeleting] = useState(false); // Chargement pendant la suppression
+  // Gestion des modales
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [itemToModifie, setItemToModifie] = useState(null);
+  const [showModifieModal, setShowModifieModal] = useState(false);
+  const [isModifying, setIsModifying] = useState(false);
 
-  // Références pour le "swipe" (glisser)
-  const touchStartX = useRef(null); // Position de départ du toucher
-  const touchCurrentX = useRef(null); // Position actuelle du toucher
+  // Réfs pour le swipe gesture
+  const touchStartX = useRef(null);
+  const touchCurrentX = useRef(null);
+
+  // ============ EFFECTS ============
+  // Chargement des données au montage du composant
   useEffect(() => {
-    const token = localStorage.getItem("token"); // Récupère le token JWT
+    const token = localStorage.getItem("token");
 
     const fetchDashboardData = async () => {
       try {
         const headers = {
-          Authorization: `Bearer ${token}`, // Authentification
-          withCredentials: true, // Sécurité (cookies)
+          Authorization: `Bearer ${token}`,
+          withCredentials: true,
         };
 
-        // Charge toutes les données en même temps (optimisation)
+        // Récupération en parallèle des différentes données
         const [totalMontantRes, totalPrelevementsRes, avenirRes, parMoisRes] =
           await Promise.all([
-            axios.get("http://192.168.1.22:8080/prelevement/total", {
-              headers,
-            }), // Montant total
-            axios.get("http://192.168.1.22:8080/prelevement/totalprelev", {
-              headers,
-            }), // Nombre total
-            axios.get("http://192.168.1.22:8080/prelevement/avenir", {
-              headers,
-            }), // Prélèvements à venir
-            axios.get("http://192.168.1.22:8080/prelevement/par-mois", {
-              headers,
-            }), // Prélèvements par mois
+            axios.get("http://192.168.1.22:8080/prelevement/total", { headers }),
+            axios.get("http://192.168.1.22:8080/prelevement/totalprelev", { headers }),
+            axios.get("http://192.168.1.22:8080/prelevement/avenir", { headers }),
+            axios.get("http://192.168.1.22:8080/prelevement/par-mois", { headers }),
           ]);
 
-        // Met à jour les états avec les données reçues
+        // Mise à jour des états
         setTotalMontant(totalMontantRes.data);
         setTotalPrelevements(totalPrelevementsRes.data);
         setPrelevementsAvenir(avenirRes.data);
@@ -62,21 +66,20 @@ const HomePage = () => {
       }
     };
 
-    fetchDashboardData(); // Lance le chargement au démarrage
-  }, []); // Ne s'exécute qu'une fois (tableau vide)
+    fetchDashboardData();
+  }, []);
 
-  // Détecte le début du swipe
+  // ============ GESTION DU SWIPE ============
   const handleTouchStart = (e, index) => {
-    touchStartX.current = e.touches ? e.touches[0].clientX : e.clientX; // Position X initiale
+    touchStartX.current = e.touches ? e.touches[0].clientX : e.clientX;
   };
 
-  // Pendant le swipe
   const handleTouchMove = (e, index) => {
     if (!touchStartX.current) return;
-    touchCurrentX.current = e.touches ? e.touches[0].clientX : e.clientX; // Position actuelle
-    const deltaX = touchCurrentX.current - touchStartX.current; // Distance parcourue
+    touchCurrentX.current = e.touches ? e.touches[0].clientX : e.clientX;
+    const deltaX = touchCurrentX.current - touchStartX.current;
 
-    // Si on glisse vers la gauche (deltaX négatif)
+    // On ne gère que le swipe vers la gauche (deltaX négatif)
     if (deltaX < 0) {
       setSwipeStates((prev) => ({
         ...prev,
@@ -85,34 +88,32 @@ const HomePage = () => {
     }
   };
 
-  // Quand on relâche le swipe
   const handleTouchEnd = (e, index) => {
     if (!touchStartX.current) return;
     const deltaX = touchCurrentX.current - touchStartX.current;
 
-    // Si le swipe dépasse le seuil, on garde l'élément décalé
+    // Si le swipe dépasse le seuil, on garde l'état ouvert
     if (deltaX < -SWIPE_THRESHOLD) {
       setSwipeStates((prev) => ({ ...prev, [index]: -120 }));
     } else {
-      setSwipeStates((prev) => ({ ...prev, [index]: 0 })); // Sinon, on remet à zéro
+      // Sinon on remet à zéro
+      setSwipeStates((prev) => ({ ...prev, [index]: 0 }));
     }
 
-    // Réinitialise les positions
+    // Reset des positions
     touchStartX.current = null;
     touchCurrentX.current = null;
   };
 
-  // Ouvre la modale de confirmation
-  const confirmDelete = (item) => {
-    setItemToDelete(item); // Stocke l'élément à supprimer
-    setShowDeleteModal(true); // Affiche la modale
-  };
+  // ============ GESTION DES ACTIONS ============
+  /**
+   * Modifie un prélèvement via l'API
+   */
+  const handleModifier = async () => {
+    if (!itemToModifie) return;
 
-  // Supprime effectivement l'élément
-  const handleSupprimer = async () => {
-    if (!itemToDelete) return;
+    setIsModifying(true);
 
-    setIsDeleting(true); // Active l'état de chargement
     try {
       const token = localStorage.getItem("token");
       const headers = {
@@ -120,56 +121,111 @@ const HomePage = () => {
         withCredentials: true,
       };
 
-      // Requête DELETE vers l'API
+      // Validation du format de date
+      if (!itemToModifie.datePrelevement?.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        throw new Error("Format de date invalide");
+      }
+
+      // Préparation des données pour l'API
+      const data = {
+        nom: itemToModifie.nom,
+        prix: Number(itemToModifie.prix),
+        datePrelevement: itemToModifie.datePrelevement,
+      };
+
+      // Appel API
+      await axios.put(
+        `http://192.168.1.22:8080/prelevement/modifier/${itemToModifie.id}`,
+        data,
+        { headers }
+      );
+
+      // Mise à jour de l'état local
+      setPrelevementsParMois((prev) =>
+        prev.map((p) =>
+          p.id === itemToModifie.id
+            ? {
+                ...p,
+                nom: data.nom,
+                prix: data.prix,
+                datePrelevement: new Date(data.datePrelevement).getDate().toString(),
+              }
+            : p
+        )
+      );
+
+      // Fermeture des modales et reset
+      setSwipeStates({});
+      setShowModifieModal(false);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Erreur de modification:", error);
+      setError(`Échec de la modification: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setIsModifying(false);
+      setItemToModifie(null);
+    }
+  };
+
+  /**
+   * Supprime un prélèvement via l'API
+   */
+  const handleSupprimer = async () => {
+    if (!itemToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        withCredentials: true,
+      };
+
+      // Appel API
       await axios.delete(
         `http://192.168.1.22:8080/prelevement/supprimer/${itemToDelete.id}`,
         { headers }
       );
 
-      // Met à jour la liste (retire l'élément supprimé)
-      setPrelevementsParMois((prev) =>
-        prev.filter((p) => p.id !== itemToDelete.id)
-      );
-      setSwipeStates({}); // Réinitialise les swipes
-
-      // Ferme la modale de confirmation et affiche celle de succès
+      // Mise à jour de l'état local
+      setPrelevementsParMois((prev) => prev.filter((p) => p.id !== itemToDelete.id));
+      
+      // Fermeture des modales et reset
+      setSwipeStates({});
       setShowDeleteModal(false);
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Erreur de suppression :", error);
       setError("Échec de la suppression.");
     } finally {
-      setIsDeleting(false); // Désactive le chargement
-      setItemToDelete(null); // Nettoie l'élément à supprimer
+      setIsDeleting(false);
+      setItemToDelete(null);
     }
   };
 
-  // Calcule le nombre total de pages
+  // Préparation des données pour la pagination
   const totalPages = Math.ceil(prelevementsParMois.length / ITEMS_PER_PAGE);
-
-  // Récupère les éléments de la page actuelle
   const currentItems = prelevementsParMois
-    .slice() // Copie le tableau (évite de modifier l'original)
-    .sort((a, b) => a.datePrelevement - b.datePrelevement) // Trie par date
-    .slice(
-      (currentPage - 1) * ITEMS_PER_PAGE, // Index de départ
-      currentPage * ITEMS_PER_PAGE // Index de fin
-    );
+    .slice()
+    .sort((a, b) => a.datePrelevement - b.datePrelevement)
+    .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
+  // ============ RENDU ============
   return (
     <div className="p-4 space-y-6 md:space-y-5 max-w-7xl mx-auto bg-gray-100 dark:bg-black min-h-screen pb-24">
+      {/* En-tête */}
       <h1 className="text-2xl text-center font-bold text-gray-800 dark:text-white">
         Bienvenue sur Prèlev' !
       </h1>
 
-      {/* Affiche les erreurs */}
+      {/* Affichage des erreurs */}
       {error && (
         <div className="text-red-600 dark:text-red-400 font-semibold mb-4">
           {error}
         </div>
       )}
 
-      {/* Carte "Nombre de prélèvements" */}
+      {/* Cartes des totaux */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -194,6 +250,7 @@ const HomePage = () => {
         </Card>
       </div>
 
+      {/* Section Prélèvements à venir */}
       <Card>
         <CardContent className="p-4">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
@@ -206,32 +263,17 @@ const HomePage = () => {
           ) : (
             <ul className="space-y-3">
               {prelevementsAvenir
-                .sort(
-                  (a, b) =>
-                    new Date(a.datePrelevement).getDate() -
-                    new Date(b.datePrelevement).getDate()
-                )
+                .sort((a, b) => new Date(a.datePrelevement).getDate() - new Date(b.datePrelevement).getDate())
                 .map((item, index) => {
                   const date = new Date(item.datePrelevement);
                   const day = date.getDate().toString().padStart(2, "0");
-                  const monthName = date.toLocaleDateString("fr-FR", {
-                    month: "long",
-                  });
-                  const logoPath = `/logos/${item.nom
-                    .toLowerCase()
-                    .replace(/\s+/g, "")}.png`;
+                  const monthName = date.toLocaleDateString("fr-FR", { month: "long" });
+                  const logoPath = `/logos/${item.nom.toLowerCase().replace(/\s+/g, "")}.png`;
 
                   return (
-                    <li
-                      key={`avenir-${index}`}
-                      className="flex justify-between items-center"
-                    >
+                    <li key={`avenir-${index}`} className="flex justify-between items-center">
                       <div className="flex items-center space-x-2">
-                        <img
-                          src={logoPath}
-                          alt={item.nom}
-                          className="w-10 h-10 object-contain"
-                        />
+                        <img src={logoPath} alt={item.nom} className="w-10 h-10 object-contain" />
                         <span className="text-gray-700 dark:text-gray-300">
                           {day} {monthName}
                         </span>
@@ -247,34 +289,36 @@ const HomePage = () => {
         </CardContent>
       </Card>
 
+      {/* Section Prélèvements par mois avec pagination */}
       <Card>
         <CardContent className="p-4">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
             Prélèvements par mois
           </h2>
+          
           {prelevementsParMois.length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400">
               Aucune donnée disponible
             </p>
           ) : (
             <>
+              {/* Liste des prélèvements avec fonctionnalité de swipe */}
               <ul className="space-y-3 mb-4">
                 {currentItems.map((item, index) => {
-                  const globalIndex =
-                    (currentPage - 1) * ITEMS_PER_PAGE + index;
-                  const day = item.datePrelevement.toString().padStart(2, "0");
-                  const monthName = new Date().toLocaleDateString("fr-FR", {
-                    month: "long",
-                  });
-                  const logoPath = `/logos/${item.nom
-                    .toLowerCase()
-                    .replace(/\s+/g, "")}.png`;
+                  const globalIndex = (currentPage - 1) * ITEMS_PER_PAGE + index;
+                  const day = typeof item.datePrelevement === "string" && item.datePrelevement.match(/^\d+$/)
+                    ? item.datePrelevement.padStart(2, "0")
+                    : new Date(item.datePrelevement).getDate().toString().padStart(2, "0");
+                  
+                  const monthName = new Date().toLocaleDateString("fr-FR", { month: "long" });
+                  const logoPath = `/logos/${item.nom.toLowerCase().replace(/\s+/g, "")}.png`;
                   const translateX = swipeStates[globalIndex] || 0;
 
                   return (
                     <li
                       key={`mois-${globalIndex}`}
                       className="relative overflow-hidden rounded-md bg-white dark:bg-zinc-900 shadow"
+                      // Gestion des événements de swipe (mobile et desktop)
                       onTouchStart={(e) => handleTouchStart(e, globalIndex)}
                       onTouchMove={(e) => handleTouchMove(e, globalIndex)}
                       onTouchEnd={(e) => handleTouchEnd(e, globalIndex)}
@@ -284,41 +328,44 @@ const HomePage = () => {
                       onMouseLeave={(e) => handleTouchEnd(e, globalIndex)}
                       style={{ userSelect: "none" }}
                     >
-                      <div
-                        className="absolute top-0 right-0 h-full flex items-center justify-end pr-4"
-                        style={{
-                          width: "120px",
-                          backgroundColor: "#ef4444",
-                          zIndex: 0,
-                        }}
-                      >
+                      {/* Boutons d'actions (apparaissent avec le swipe) */}
+                      <div className="absolute top-0 right-0 h-full flex items-center px-5" style={{ width: "125px", zIndex: 0 }}>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            confirmDelete(item);
+                            setItemToModifie({
+                              ...item,
+                              datePrelevement: formatDateForInput(item.datePrelevement),
+                            });
+                            setShowModifieModal(true);
                           }}
-                          className="text-white font-medium"
+                          className="text-white font-medium bg-blue-500 hover:bg-blue-600 px-4 py-6 rounded"
                         >
-                          Supprimer
+                          <Pencil className="w-5 h-5 text-white" />
+                        </button>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setItemToDelete(item);
+                            setShowDeleteModal(true);
+                          }}
+                          className="text-white font-medium bg-red-600 hover:bg-red-700 px-4 py-6 rounded"
+                        >
+                          <Trash2 className="w-5 h-5 text-white" />
                         </button>
                       </div>
 
+                      {/* Contenu de l'item (se déplace avec le swipe) */}
                       <div
                         className="flex justify-between items-center px-4 py-3 cursor-pointer relative z-10 bg-white dark:bg-zinc-900"
                         style={{
                           transform: `translateX(${translateX}px)`,
-                          transition:
-                            swipeStates[globalIndex] === 0
-                              ? "transform 0.3s ease"
-                              : "none",
+                          transition: swipeStates[globalIndex] === 0 ? "transform 0.3s ease" : "none",
                         }}
                       >
                         <div className="flex items-center space-x-2">
-                          <img
-                            src={logoPath}
-                            alt={item.nom}
-                            className="w-10 h-10 object-contain"
-                          />
+                          <img src={logoPath} alt={item.nom} className="w-10 h-10 object-contain" />
                           <span className="text-gray-700 dark:text-gray-300">
                             {day} {monthName}
                           </span>
@@ -334,7 +381,7 @@ const HomePage = () => {
 
               {/* Pagination */}
               <div className="flex items-center justify-center gap-2 mt-4">
-                {/* Bouton "Précédent" */}
+                {/* Bouton précédent */}
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={currentPage === 1}
@@ -344,19 +391,8 @@ const HomePage = () => {
                       : "bg-green-500 hover:bg-green-600 text-white shadow-md"
                   }`}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
 
@@ -375,14 +411,12 @@ const HomePage = () => {
                     1
                   </button>
 
-                  {/* Afficher "..." si on est loin du début */}
+                  {/* Ellipsis si nécessaire */}
                   {currentPage > 3 && totalPages > 5 && (
-                    <span key="start-ellipsis" className="px-2">
-                      ...
-                    </span>
+                    <span key="start-ellipsis" className="px-2">...</span>
                   )}
 
-                  {/* Afficher les pages autour de la page actuelle */}
+                  {/* Pages autour de la page courante */}
                   {(() => {
                     const pages = [];
                     const startPage = Math.max(2, currentPage - 1);
@@ -408,11 +442,9 @@ const HomePage = () => {
                     return pages;
                   })()}
 
-                  {/* Afficher "..." si on est loin de la fin */}
+                  {/* Ellipsis si nécessaire */}
                   {currentPage < totalPages - 2 && totalPages > 5 && (
-                    <span key="end-ellipsis" className="px-2">
-                      ...
-                    </span>
+                    <span key="end-ellipsis" className="px-2">...</span>
                   )}
 
                   {/* Toujours afficher la dernière page */}
@@ -431,11 +463,9 @@ const HomePage = () => {
                   )}
                 </div>
 
-                {/* Bouton "Suivant" */}
+                {/* Bouton suivant */}
                 <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(p + 1, totalPages))
-                  }
+                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                   disabled={currentPage === totalPages}
                   className={`p-2 rounded-full min-w-10 h-10 flex items-center justify-center ${
                     currentPage === totalPages
@@ -443,19 +473,8 @@ const HomePage = () => {
                       : "bg-green-500 hover:bg-green-600 text-white shadow-md"
                   }`}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
@@ -464,7 +483,9 @@ const HomePage = () => {
         </CardContent>
       </Card>
 
-      {/* Modale de confirmation de suppression */}
+      {/* ============ MODALES ============ */}
+      
+      {/* Modale de suppression */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
@@ -472,9 +493,7 @@ const HomePage = () => {
               Confirmer la suppression
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Êtes-vous sûr de vouloir supprimer le prélèvement de{" "}
-              {itemToDelete?.nom} ({itemToDelete?.prix.toFixed(2)} €) ? Cette
-              action est irréversible.
+              Êtes-vous sûr de vouloir supprimer le prélèvement de {itemToDelete?.nom} ({itemToDelete?.prix.toFixed(2)} €) ? Cette action est irréversible.
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -496,19 +515,100 @@ const HomePage = () => {
         </div>
       )}
 
-      {/* Modale de confirmation de succès */}
+      {/* Modale de modification */}
+      {showModifieModal && itemToModifie && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+              Modifier le prélèvement
+            </h3>
+            <div className="space-y-4">
+              {/* Champ Nom */}
+              <div>
+                <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                  Nom
+                </label>
+                <input
+                  type="text"
+                  value={itemToModifie.nom}
+                  onChange={(e) => setItemToModifie({ ...itemToModifie, nom: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              
+              {/* Champ Montant */}
+              <div>
+                <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                  Montant (€)
+                </label>
+                <input
+                  type="number"
+                  value={itemToModifie.prix}
+                  onChange={(e) => setItemToModifie({ ...itemToModifie, prix: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              
+              {/* Champ Date avec activation du picker au clic */}
+              <div>
+                <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  value={itemToModifie?.datePrelevement || ""}
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    if (!e.target.value.match(/^\d{4}-\d{2}-\d{2}$/)) return;
+                    setItemToModifie({
+                      ...itemToModifie,
+                      datePrelevement: e.target.value,
+                    });
+                  }}
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  onClick={(e) => e.target.showPicker()} // Force l'affichage du picker
+                />
+              </div>
+            </div>
+            
+            {/* Boutons de la modale */}
+            <div className="flex justify-end space-x-3 mt-4">
+              <button
+                onClick={() => setShowModifieModal(false)}
+                className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleModifier}
+                disabled={isModifying}
+                className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                {isModifying ? "Enregistrement..." : "Enregistrer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modale de succès (commune pour suppression et modification) */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-              Suppression réussie
+              {itemToDelete ? "Suppression réussie" : "Modification réussie"}
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Le prélèvement a été supprimé avec succès.
+              {itemToDelete
+                ? "Le prélèvement a été supprimé avec succès."
+                : "Le prélèvement a été modifié avec succès."}
             </p>
             <div className="flex justify-end">
               <button
-                onClick={() => setShowSuccessModal(false)}
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  setItemToDelete(null);
+                }}
                 className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 transition"
               >
                 Fermer
