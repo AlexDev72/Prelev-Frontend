@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import React from 'react';
 import HomePage from './pages/HomePage';  
 import Connexion from './pages/Connexion';
 import Inscription from './pages/Inscription';

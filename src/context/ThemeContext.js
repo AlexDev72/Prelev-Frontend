@@ -1,4 +1,3 @@
-// 1. Créez un contexte ThemeContext.js
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();

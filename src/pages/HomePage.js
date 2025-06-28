@@ -212,7 +212,7 @@ const HomePage = () => {
 
   // ============ RENDU ============
   return (
-    <div className="p-4 space-y-6 md:space-y-5 max-w-7xl mx-auto bg-gray-100 dark:bg-black min-h-screen pb-24">
+    <div className="p-4 space-y-6 md:space-y-5 mx-auto bg-gray-100 dark:bg-black min-h-screen pb-24">
       {/* En-tête */}
       <h1 className="text-2xl text-center font-bold text-gray-800 dark:text-white">
         Bienvenue sur Prèlev' !
@@ -518,21 +518,21 @@ const HomePage = () => {
       {/* Modale de modification */}
       {showModifieModal && itemToModifie && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+          <div className="bg-white dark:bg-zinc-800 rounded-lg p-6 max-w-md w-full">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
               Modifier le prélèvement
             </h3>
             <div className="space-y-4">
               {/* Champ Nom */}
               <div>
-                <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-gray-700 dark:text-zinc-300 mb-1">
                   Nom
                 </label>
                 <input
                   type="text"
                   value={itemToModifie.nom}
                   onChange={(e) => setItemToModifie({ ...itemToModifie, nom: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                 />
               </div>
               
@@ -545,13 +545,13 @@ const HomePage = () => {
                   type="number"
                   value={itemToModifie.prix}
                   onChange={(e) => setItemToModifie({ ...itemToModifie, prix: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                 />
               </div>
               
               {/* Champ Date avec activation du picker au clic */}
               <div>
-                <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-gray-700 dark:text-zinc-300 mb-1">
                   Date
                 </label>
                 <input
@@ -565,7 +565,7 @@ const HomePage = () => {
                       datePrelevement: e.target.value,
                     });
                   }}
-                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                   onClick={(e) => e.target.showPicker()} // Force l'affichage du picker
                 />
               </div>
